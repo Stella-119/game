@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动物森林 - 关卡选择</title>
+    <link rel="stylesheet" href="level-select.css">
+</head>
+<body>
+    <div class="forest-container">
+        <div class="forest-background">
+            <div class="tree tree-1">🌲</div>
+            <div class="tree tree-2">🌳</div>
+            <div class="tree tree-3">🌲</div>
+            <div class="tree tree-4">🌳</div>
+            <div class="tree tree-5">🌲</div>
+            <div class="animal animal-1">🦌</div>
+            <div class="animal animal-2">🐰</div>
+            <div class="animal animal-3">🦊</div>
+            <div class="animal animal-4">🐿️</div>
+        </div>
+        
+        <div class="level-select-container">
+            <div class="user-profile">
+                <div class="avatar-container">
+                    <div class="avatar" id="avatar">🐱</div>
+                    <button class="edit-avatar-btn" id="edit-avatar-btn">✏️</button>
+                </div>
+                <div class="user-info">
+                    <div class="user-name-container">
+                        <span class="user-name" id="user-name">森林探险家</span>
+                        <button class="edit-name-btn" id="edit-name-btn">✏️</button>
+                    </div>
+                    <div class="user-stats">
+                        <div class="stat">
+                            <span class="stat-label">最高关卡:</span>
+                            <span class="stat-value" id="max-level">1</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">总分数:</span>
+                            <span class="stat-value" id="total-score">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h1 class="forest-title">🌲 动物森林 🌲</h1>
+            
+            <div class="levels-grid" id="levels-grid">
+            </div>
+            
+            <div class="game-controls">
+                <button class="forest-btn" id="back-to-game">返回游戏</button>
+                <button class="forest-btn" id="play-selected">开始游戏</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="avatar-modal">
+        <div class="modal-content">
+            <h3>选择你的动物头像</h3>
+            <div class="avatar-options" id="avatar-options">
+            </div>
+            <button class="close-modal" id="close-avatar-modal">确定</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="name-modal">
+        <div class="modal-content">
+            <h3>修改你的名字</h3>
+            <input type="text" id="name-input" class="name-input" maxlength="10">
+            <div class="modal-buttons">
+                <button class="modal-btn" id="cancel-name">取消</button>
+                <button class="modal-btn confirm" id="confirm-name">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="level-select.js"></script>
+</body>
+</html>
