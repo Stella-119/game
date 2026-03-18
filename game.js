@@ -1,7 +1,7 @@
 class AnimalMatch3 {
     constructor() {
-        // 根据屏幕宽度动态调整游戏板大小
-        this.boardSize = this.getBoardSize();
+        // 固定游戏板为6*6格子
+        this.boardSize = 6;
         this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
         this.specialAnimals = {
             horizontal: '🌈', // 横向消除
@@ -18,26 +18,6 @@ class AnimalMatch3 {
         this.userData = this.loadUserData();
         
         this.init();
-        
-        // 监听窗口大小变化
-        window.addEventListener('resize', () => {
-            const newBoardSize = this.getBoardSize();
-            if (newBoardSize !== this.boardSize) {
-                this.boardSize = newBoardSize;
-                this.resetGame();
-            }
-        });
-    }
-    
-    getBoardSize() {
-        const width = window.innerWidth;
-        if (width <= 480) {
-            return 5; // 移动端小屏幕
-        } else if (width <= 768) {
-            return 6; // 移动端大屏幕
-        } else {
-            return 8; // 桌面端
-        }
     }
     
     init() {
@@ -102,13 +82,45 @@ class AnimalMatch3 {
     loadLevelData() {
         this.level = this.userData.currentLevel || 1;
         this.targetScore = this.level * 100;
-        this.moves = Math.max(20, 35 - this.level);
+        this.moves = Math.max(15, 35 - this.level);
         
-        if (this.level > 5) {
+        // 增加游戏难度维度
+        this.levelObjectives = {
+            specialTarget: null, // 特殊目标（例如收集特定动物）
+            timeLimit: null, // 时间限制（秒）
+            obstacles: false, // 是否有障碍物
+            minMatchLength: 3 // 最小匹配长度
+        };
+        
+        // 根据关卡设置不同的难度
+        if (this.level >= 5) {
+            // 第5关开始增加动物种类
             this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁'];
         }
-        if (this.level > 10) {
+        if (this.level >= 10) {
+            // 第10关开始增加更多动物种类
             this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐸'];
+        }
+        if (this.level >= 8) {
+            // 第8关开始设置特殊目标
+            const specialAnimals = ['🐼', '🦁', '🦊'];
+            this.levelObjectives.specialTarget = {
+                animal: specialAnimals[Math.floor(Math.random() * specialAnimals.length)],
+                count: Math.min(10, this.level * 2)
+            };
+        }
+        if (this.level >= 12) {
+            // 第12关开始设置时间限制
+            this.levelObjectives.timeLimit = Math.max(60, 120 - this.level * 5);
+            this.startTime = Date.now();
+        }
+        if (this.level >= 15) {
+            // 第15关开始有障碍物
+            this.levelObjectives.obstacles = true;
+        }
+        if (this.level >= 18) {
+            // 第18关开始要求最小匹配长度为4
+            this.levelObjectives.minMatchLength = 4;
         }
     }
     
@@ -673,6 +685,16 @@ class AnimalMatch3 {
 
     
     checkGameEnd() {
+        // 检查时间限制
+        if (this.levelObjectives.timeLimit) {
+            const timeLeft = Math.max(0, this.levelObjectives.timeLimit - Math.floor((Date.now() - this.startTime) / 1000));
+            if (timeLeft <= 0) {
+                this.levelFailed();
+                return;
+            }
+        }
+        
+        // 检查步数限制
         if (this.moves <= 0) {
             if (this.score >= this.targetScore) {
                 this.levelComplete();
@@ -682,8 +704,18 @@ class AnimalMatch3 {
             return;
         }
         
-        if (this.score >= this.targetScore) {
-            this.levelComplete();
+        // 检查特殊目标
+        if (this.levelObjectives.specialTarget) {
+            // 这里需要实现特殊目标的检查逻辑
+            // 暂时简化为只检查分数
+            if (this.score >= this.targetScore) {
+                this.levelComplete();
+            }
+        } else {
+            // 普通关卡只检查分数
+            if (this.score >= this.targetScore) {
+                this.levelComplete();
+            }
         }
     }
     
@@ -724,6 +756,43 @@ class AnimalMatch3 {
         document.getElementById('target').textContent = this.targetScore;
         document.getElementById('level').textContent = this.level;
         document.getElementById('moves').textContent = this.moves;
+        
+        // 显示特殊目标信息
+        if (this.levelObjectives.specialTarget) {
+            const specialTargetInfo = document.createElement('div');
+            specialTargetInfo.id = 'special-target';
+            specialTargetInfo.textContent = `目标: 收集 ${this.levelObjectives.specialTarget.count} 个 ${this.levelObjectives.specialTarget.animal}`;
+            specialTargetInfo.style.marginTop = '10px';
+            specialTargetInfo.style.fontSize = '1em';
+            specialTargetInfo.style.fontWeight = 'bold';
+            specialTargetInfo.style.color = '#4CAF50';
+            
+            const gameInfo = document.querySelector('.game-info');
+            const existingTarget = document.getElementById('special-target');
+            if (existingTarget) {
+                existingTarget.remove();
+            }
+            gameInfo.appendChild(specialTargetInfo);
+        }
+        
+        // 显示时间限制信息
+        if (this.levelObjectives.timeLimit) {
+            const timeLeft = Math.max(0, this.levelObjectives.timeLimit - Math.floor((Date.now() - this.startTime) / 1000));
+            const timeInfo = document.createElement('div');
+            timeInfo.id = 'time-limit';
+            timeInfo.textContent = `时间: ${timeLeft}s`;
+            timeInfo.style.marginTop = '10px';
+            timeInfo.style.fontSize = '1em';
+            timeInfo.style.fontWeight = 'bold';
+            timeInfo.style.color = timeLeft < 10 ? '#f44336' : '#2196F3';
+            
+            const gameInfo = document.querySelector('.game-info');
+            const existingTime = document.getElementById('time-limit');
+            if (existingTime) {
+                existingTime.remove();
+            }
+            gameInfo.appendChild(timeInfo);
+        }
     }
     
     showMessage(text, type) {

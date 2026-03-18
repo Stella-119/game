@@ -191,58 +191,42 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    animation: treeSway 4s ease-in-out infinite;
 }
 
 .tree-1 {
     top: 10%;
     left: 5%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="45" y="100" width="10" height="50" fill="%238B4513"/><circle cx="50" cy="70" r="30" fill="%23228B22"/><circle cx="50" cy="40" r="20" fill="%23228B22"/></svg>');
-    animation-delay: 0s;
 }
 
 .tree-2 {
     top: 30%;
     right: 10%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="45" y="100" width="10" height="50" fill="%238B4513"/><circle cx="50" cy="70" r="30" fill="%23228B22"/><circle cx="50" cy="40" r="20" fill="%23228B22"/></svg>');
-    animation-delay: 1s;
 }
 
 .tree-3 {
     bottom: 20%;
     left: 15%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="45" y="100" width="10" height="50" fill="%238B4513"/><circle cx="50" cy="70" r="30" fill="%23228B22"/><circle cx="50" cy="40" r="20" fill="%23228B22"/></svg>');
-    animation-delay: 2s;
 }
 
 .tree-4 {
     bottom: 10%;
     right: 15%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="45" y="100" width="10" height="50" fill="%238B4513"/><circle cx="50" cy="70" r="30" fill="%23228B22"/><circle cx="50" cy="40" r="20" fill="%23228B22"/></svg>');
-    animation-delay: 1.5s;
 }
 
 .tree-5 {
     top: 20%;
     left: 30%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="45" y="100" width="10" height="50" fill="%238B4513"/><circle cx="50" cy="70" r="30" fill="%2332CD32"/><circle cx="50" cy="40" r="20" fill="%2332CD32"/></svg>');
-    animation-delay: 0.5s;
 }
 
 .tree-6 {
     bottom: 30%;
     right: 25%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="45" y="100" width="10" height="50" fill="%238B4513"/><circle cx="50" cy="70" r="30" fill="%2332CD32"/><circle cx="50" cy="40" r="20" fill="%2332CD32"/></svg>');
-    animation-delay: 2.5s;
-}
-
-@keyframes treeSway {
-    0%, 100% {
-        transform: rotate(-2deg);
-    }
-    50% {
-        transform: rotate(2deg);
-    }
 }
 
 /* 动物角色 */
@@ -253,108 +237,75 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    animation: animalBounce 3s ease-in-out infinite;
 }
 
 .animal.rabbit {
     top: 40%;
     left: 25%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%23FFFFFF"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="40" rx="3" ry="2" fill="%23FF69B4"/><circle cx="35" cy="30" r="5" fill="%23FFFFFF"/><circle cx="65" cy="30" r="5" fill="%23FFFFFF"/><rect x="40" y="50" width="20" height="15" fill="%23FFFFFF"/><rect x="35" y="60" width="10" height="20" fill="%23FFFFFF"/><rect x="55" y="60" width="10" height="20" fill="%23FFFFFF"/></svg>');
-    animation-delay: 0s;
 }
 
 .animal.bear {
     top: 15%;
     right: 20%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="25" fill="%238B4513"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="45" rx="5" ry="3" fill="%23000000"/><rect x="30" y="60" width="15" height="20" fill="%238B4513"/><rect x="55" y="60" width="15" height="20" fill="%238B4513"/><rect x="40" y="70" width="20" height="15" fill="%238B4513"/><rect x="35" y="30" width="30" height="10" fill="%23ADD8E6"/></svg>');
-    animation-delay: 1s;
 }
 
 .animal.cat {
     bottom: 30%;
     left: 15%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%2387CEEB"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="45" rx="5" ry="2" fill="%23FF69B4"/><rect x="30" y="50" width="10" height="15" fill="%2387CEEB"/><rect x="60" y="50" width="10" height="15" fill="%2387CEEB"/><rect x="35" y="60" width="10" height="20" fill="%2387CEEB"/><rect x="55" y="60" width="10" height="20" fill="%2387CEEB"/></svg>');
-    animation-delay: 0.5s;
 }
 
 .animal.pink-rabbit {
     bottom: 20%;
     right: 25%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%23FFB6C1"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="40" rx="3" ry="2" fill="%23FF69B4"/><circle cx="35" cy="30" r="5" fill="%23FFB6C1"/><circle cx="65" cy="30" r="5" fill="%23FFB6C1"/><rect x="40" y="50" width="20" height="15" fill="%23FFB6C1"/><rect x="35" y="60" width="10" height="20" fill="%23FFB6C1"/><rect x="55" y="60" width="10" height="20" fill="%23FFB6C1"/></svg>');
-    animation-delay: 1.5s;
 }
 
 .animal.dog {
     bottom: 10%;
     left: 60%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="45" r="20" fill="%23DEB887"/><circle cx="40" cy="40" r="3" fill="%23000000"/><circle cx="60" cy="40" r="3" fill="%23000000"/><ellipse cx="50" cy="48" rx="5" ry="2" fill="%23000000"/><rect x="30" y="55" width="10" height="15" fill="%23DEB887"/><rect x="60" y="55" width="10" height="15" fill="%23DEB887"/><rect x="35" y="65" width="10" height="15" fill="%23DEB887"/><rect x="55" y="65" width="10" height="15" fill="%23DEB887"/></svg>');
-    animation-delay: 2s;
 }
 
 .animal.fox {
     top: 50%;
     right: 30%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%23FF8C00"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="45" rx="5" ry="2" fill="%23000000"/><rect x="30" y="50" width="10" height="15" fill="%23FF8C00"/><rect x="60" y="50" width="10" height="15" fill="%23FF8C00"/><rect x="35" y="60" width="10" height="20" fill="%23FF8C00"/><rect x="55" y="60" width="10" height="20" fill="%23FF8C00"/></svg>');
-    animation-delay: 0.3s;
 }
 
 .animal.panda {
     top: 25%;
     left: 40%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%23FFFFFF"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="45" rx="5" ry="2" fill="%23000000"/><rect x="30" y="50" width="10" height="15" fill="%23FFFFFF"/><rect x="60" y="50" width="10" height="15" fill="%23FFFFFF"/><rect x="35" y="60" width="10" height="20" fill="%23FFFFFF"/><rect x="55" y="60" width="10" height="20" fill="%23FFFFFF"/><circle cx="40" cy="35" r="5" fill="%23000000"/><circle cx="60" cy="35" r="5" fill="%23000000"/></svg>');
-    animation-delay: 1.2s;
 }
 
 .animal.koala {
     bottom: 40%;
     left: 70%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%23808080"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="45" rx="5" ry="2" fill="%23000000"/><rect x="30" y="50" width="10" height="15" fill="%23808080"/><rect x="60" y="50" width="10" height="15" fill="%23808080"/><rect x="35" y="60" width="10" height="20" fill="%23808080"/><rect x="55" y="60" width="10" height="20" fill="%23808080"/></svg>');
-    animation-delay: 1.8s;
-}
-
-@keyframes animalBounce {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-15px);
-    }
 }
 
 /* 云朵 */
 .cloud {
     position: absolute;
     font-size: 2em;
-    animation: cloudFloat 20s linear infinite;
 }
 
 .cloud-1 {
     top: 10%;
-    left: -10%;
-    animation-delay: 0s;
+    left: 10%;
 }
 
 .cloud-2 {
     top: 25%;
-    right: -10%;
-    animation-delay: 10s;
-    animation-direction: reverse;
+    right: 15%;
 }
 
 .cloud-3 {
     top: 60%;
-    left: -10%;
-    animation-delay: 5s;
-    animation-duration: 25s;
-}
-
-@keyframes cloudFloat {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(110vw);
-    }
+    left: 30%;
 }
 
 /* 花朵 */
@@ -365,126 +316,30 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    animation: flowerSway 3s ease-in-out infinite;
 }
 
 .flower-1 {
     bottom: 5%;
     left: 10%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="%23FF69B4"/><circle cx="50" cy="50" r="10" fill="%23FFFF00"/></svg>');
-    animation-delay: 0s;
 }
 
 .flower-2 {
     bottom: 15%;
     right: 20%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="%23FF1493"/><circle cx="50" cy="50" r="10" fill="%23FFFF00"/></svg>');
-    animation-delay: 1s;
 }
 
 .flower-3 {
     bottom: 25%;
     left: 30%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="%23FF69B4"/><circle cx="50" cy="50" r="10" fill="%23FFFF00"/></svg>');
-    animation-delay: 0.5s;
 }
 
 .flower-4 {
     bottom: 10%;
     right: 40%;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="%23FF1493"/><circle cx="50" cy="50" r="10" fill="%23FFFF00"/></svg>');
-    animation-delay: 1.5s;
-}
-
-@keyframes flowerSway {
-    0%, 100% {
-        transform: rotate(-5deg) scale(1);
-    }
-    50% {
-        transform: rotate(5deg) scale(1.1);
-    }
-}
-
-/* 蝴蝶 */
-.butterfly {
-    position: absolute;
-    font-size: 1.5em;
-    animation: butterflyFly 8s ease-in-out infinite;
-}
-
-.butterfly-1 {
-    top: 30%;
-    left: 10%;
-    animation-delay: 0s;
-}
-
-.butterfly-2 {
-    top: 50%;
-    right: 15%;
-    animation-delay: 3s;
-    animation-direction: reverse;
-}
-
-@keyframes butterflyFly {
-    0% {
-        transform: translate(0, 0) rotate(0deg);
-    }
-    25% {
-        transform: translate(50px, -30px) rotate(180deg);
-    }
-    50% {
-        transform: translate(100px, 0) rotate(360deg);
-    }
-    75% {
-        transform: translate(50px, 30px) rotate(540deg);
-    }
-    100% {
-        transform: translate(0, 0) rotate(720deg);
-    }
-}
-
-/* 星星 */
-.star {
-    position: absolute;
-    font-size: 1.2em;
-    animation: starTwinkle 2s ease-in-out infinite;
-    color: #ffeb3b;
-    text-shadow: 0 0 10px #ffeb3b;
-}
-
-.star-1 {
-    top: 15%;
-    right: 25%;
-    animation-delay: 0s;
-}
-
-.star-2 {
-    top: 40%;
-    left: 15%;
-    animation-delay: 0.5s;
-}
-
-.star-3 {
-    bottom: 30%;
-    right: 35%;
-    animation-delay: 1s;
-}
-
-.star-4 {
-    bottom: 50%;
-    left: 25%;
-    animation-delay: 1.5s;
-}
-
-@keyframes starTwinkle {
-    0%, 100% {
-        opacity: 0.3;
-        transform: scale(0.8);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.2);
-    }
 }
 
 /* 关卡路径 */

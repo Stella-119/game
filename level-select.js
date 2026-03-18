@@ -76,7 +76,7 @@ class LevelSelect {
         const levelPath = document.getElementById('level-path');
         levelPath.innerHTML = '';
         
-        const totalLevels = 5; // 初始5个关卡，匹配图片设计
+        const totalLevels = 20; // 增加到20个关卡
         
         for (let i = 1; i <= totalLevels; i++) {
             // 创建关卡节点
