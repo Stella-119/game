@@ -73,17 +73,22 @@ class LevelSelect {
     }
     
     renderLevels() {
-        const levelPath = document.getElementById('level-path');
-        levelPath.innerHTML = '';
+        const windingPath = document.getElementById('winding-path');
+        windingPath.innerHTML = '';
         
-        const totalLevels = 20; // 增加到20个关卡
+        const totalLevels = 50;
         
+        // 创建50个关卡节点，沿着S形弯曲小路排列
         for (let i = 1; i <= totalLevels; i++) {
-            // 创建关卡节点
             const levelNode = document.createElement('div');
-            levelNode.classList.add('level-node');
-            levelNode.textContent = i;
+            levelNode.classList.add('level-stump');
             levelNode.dataset.level = i;
+            
+            // 创建关卡数字
+            const levelNumber = document.createElement('div');
+            levelNumber.classList.add('level-number');
+            levelNumber.textContent = i;
+            levelNode.appendChild(levelNumber);
             
             // 设置关卡状态
             if (this.userData.completedLevels.includes(i)) {
@@ -99,14 +104,7 @@ class LevelSelect {
                 levelNode.classList.add('locked');
             }
             
-            levelPath.appendChild(levelNode);
-            
-            // 添加连接线（除了最后一个关卡）
-            if (i < totalLevels) {
-                const connector = document.createElement('div');
-                connector.classList.add('level-connector');
-                levelPath.appendChild(connector);
-            }
+            windingPath.appendChild(levelNode);
         }
     }
     

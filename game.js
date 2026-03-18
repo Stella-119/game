@@ -2,7 +2,8 @@ class AnimalMatch3 {
     constructor() {
         // 固定游戏板为6*6格子
         this.boardSize = 6;
-        this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
+        // 使用更不同的动物表情，避免颜色相似
+        this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐸', '🐵', '🦄', '🐮', '🐷'];
         this.specialAnimals = {
             horizontal: '🌈', // 横向消除
             vertical: '⚡',    // 纵向消除
@@ -80,47 +81,71 @@ class AnimalMatch3 {
     }
     
     loadLevelData() {
-        this.level = this.userData.currentLevel || 1;
-        this.targetScore = this.level * 100;
-        this.moves = Math.max(15, 35 - this.level);
+        // 优先使用从关卡选择页面传递的关卡，否则使用当前关卡
+        this.level = parseInt(localStorage.getItem('animalMatch3SelectedLevel')) || this.userData.currentLevel || 1;
+        localStorage.removeItem('animalMatch3SelectedLevel');
         
-        // 增加游戏难度维度
-        this.levelObjectives = {
-            specialTarget: null, // 特殊目标（例如收集特定动物）
-            timeLimit: null, // 时间限制（秒）
-            obstacles: false, // 是否有障碍物
-            minMatchLength: 3 // 最小匹配长度
-        };
-        
-        // 根据关卡设置不同的难度
-        if (this.level >= 5) {
-            // 第5关开始增加动物种类
-            this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁'];
-        }
-        if (this.level >= 10) {
-            // 第10关开始增加更多动物种类
-            this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐸'];
-        }
-        if (this.level >= 8) {
-            // 第8关开始设置特殊目标
-            const specialAnimals = ['🐼', '🦁', '🦊'];
-            this.levelObjectives.specialTarget = {
-                animal: specialAnimals[Math.floor(Math.random() * specialAnimals.length)],
-                count: Math.min(10, this.level * 2)
+        // 根据关卡设置不同的目标和难度
+        if (this.level <= 5) {
+            this.targetScore = this.level * 100;
+            this.moves = 30;
+            this.levelObjectives = { specialTarget: null, timeLimit: null, obstacles: false, minMatchLength: 3 };
+            this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊'];
+        } else if (this.level <= 10) {
+            this.targetScore = this.level * 120;
+            this.moves = 25;
+            this.levelObjectives = { 
+                specialTarget: { animal: '🐼', count: 5 }, 
+                timeLimit: null, 
+                obstacles: false, 
+                minMatchLength: 3 
             };
+            this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁'];
+        } else if (this.level <= 15) {
+            this.targetScore = this.level * 150;
+            this.moves = 20;
+            this.levelObjectives = { 
+                specialTarget: { animal: '🦁', count: 8 }, 
+                timeLimit: 120, 
+                obstacles: false, 
+                minMatchLength: 3 
+            };
+            this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐸'];
+        } else if (this.level <= 20) {
+            this.targetScore = this.level * 180;
+            this.moves = 18;
+            this.levelObjectives = { 
+                specialTarget: { animal: '🦊', count: 10 }, 
+                timeLimit: 90, 
+                obstacles: true, 
+                minMatchLength: 3 
+            };
+            this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐸', '🐵', '🦄'];
+        } else if (this.level <= 30) {
+            this.targetScore = this.level * 200;
+            this.moves = 15;
+            this.levelObjectives = { 
+                specialTarget: { animal: '🦄', count: 12 }, 
+                timeLimit: 60, 
+                obstacles: true, 
+                minMatchLength: 3 
+            };
+            this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐸', '🐵', '🦄', '🐮', '🐷'];
+        } else {
+            this.targetScore = this.level * 220;
+            this.moves = 12;
+            this.levelObjectives = { 
+                specialTarget: { animal: '🐵', count: 15 }, 
+                timeLimit: 45, 
+                obstacles: true, 
+                minMatchLength: 4 
+            };
+            this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐸', '🐵', '🦄', '🐮', '🐷'];
         }
-        if (this.level >= 12) {
-            // 第12关开始设置时间限制
-            this.levelObjectives.timeLimit = Math.max(60, 120 - this.level * 5);
+        
+        // 如果有时间限制，初始化开始时间
+        if (this.levelObjectives.timeLimit) {
             this.startTime = Date.now();
-        }
-        if (this.level >= 15) {
-            // 第15关开始有障碍物
-            this.levelObjectives.obstacles = true;
-        }
-        if (this.level >= 18) {
-            // 第18关开始要求最小匹配长度为4
-            this.levelObjectives.minMatchLength = 4;
         }
     }
     
@@ -148,7 +173,55 @@ class AnimalMatch3 {
             }
             
             attempts++;
-        } while (this.checkBoardForMatches() && attempts < maxAttempts);
+        } while ((this.checkBoardForMatches() || !this.hasValidMoves()) && attempts < maxAttempts);
+    }
+    
+    // 检查是否有有效的移动
+    hasValidMoves() {
+        for (let i = 0; i < this.boardSize; i++) {
+            for (let j = 0; j < this.boardSize; j++) {
+                // 检查水平交换
+                if (j < this.boardSize - 1) {
+                    // 交换
+                    const temp = this.board[i][j];
+                    this.board[i][j] = this.board[i][j + 1];
+                    this.board[i][j + 1] = temp;
+                    
+                    // 检查是否有匹配
+                    if (this.checkMatches()) {
+                        // 交换回来
+                        this.board[i][j + 1] = this.board[i][j];
+                        this.board[i][j] = temp;
+                        return true;
+                    }
+                    
+                    // 交换回来
+                    this.board[i][j + 1] = this.board[i][j];
+                    this.board[i][j] = temp;
+                }
+                
+                // 检查垂直交换
+                if (i < this.boardSize - 1) {
+                    // 交换
+                    const temp = this.board[i][j];
+                    this.board[i][j] = this.board[i + 1][j];
+                    this.board[i + 1][j] = temp;
+                    
+                    // 检查是否有匹配
+                    if (this.checkMatches()) {
+                        // 交换回来
+                        this.board[i + 1][j] = this.board[i][j];
+                        this.board[i][j] = temp;
+                        return true;
+                    }
+                    
+                    // 交换回来
+                    this.board[i + 1][j] = this.board[i][j];
+                    this.board[i][j] = temp;
+                }
+            }
+        }
+        return false;
     }
     
     hasMatch(row, col, animal) {

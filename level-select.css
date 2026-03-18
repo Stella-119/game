@@ -168,347 +168,332 @@ body {
 .game-scene {
     position: relative;
     min-height: calc(100vh - 90px);
-    background: linear-gradient(135deg, #98fb98 0%, #90ee90 100%);
+    background: linear-gradient(180deg, #E8F5E9 0%, #C8E6C9 50%, #A5D6A7 100%);
     padding: 30px;
     overflow: hidden;
 }
 
-.background-elements {
-    position: absolute;
-    top: 0;
-    left: 0;
+/* 森林背景 */
+.forest-background {
+    position: relative;
     width: 100%;
     height: 100%;
-    pointer-events: none;
-    z-index: 1;
+    min-height: 600px;
 }
 
-/* 树木 */
+/* 简化树木 - 圆形树冠 */
 .tree {
     position: absolute;
-    width: 120px;
-    height: 180px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tree::before {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 30px;
+    background: #8B4513;
+    border-radius: 5px;
 }
 
 .tree-1 {
-    top: 10%;
-    left: 5%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="45" y="100" width="10" height="50" fill="%238B4513"/><circle cx="50" cy="70" r="30" fill="%23228B22"/><circle cx="50" cy="40" r="20" fill="%23228B22"/></svg>');
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, #81C784 0%, #66BB6A 100%);
+    top: 5%;
+    left: 8%;
 }
 
 .tree-2 {
-    top: 30%;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, #A5D6A7 0%, #81C784 100%);
+    top: 10%;
     right: 10%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="45" y="100" width="10" height="50" fill="%238B4513"/><circle cx="50" cy="70" r="30" fill="%23228B22"/><circle cx="50" cy="40" r="20" fill="%23228B22"/></svg>');
 }
 
 .tree-3 {
-    bottom: 20%;
-    left: 15%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="45" y="100" width="10" height="50" fill="%238B4513"/><circle cx="50" cy="70" r="30" fill="%23228B22"/><circle cx="50" cy="40" r="20" fill="%23228B22"/></svg>');
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle, #C8E6C9 0%, #A5D6A7 100%);
+    top: 30%;
+    left: 5%;
 }
 
 .tree-4 {
-    bottom: 10%;
-    right: 15%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="45" y="100" width="10" height="50" fill="%238B4513"/><circle cx="50" cy="70" r="30" fill="%23228B22"/><circle cx="50" cy="40" r="20" fill="%23228B22"/></svg>');
+    width: 90px;
+    height: 90px;
+    background: radial-gradient(circle, #81C784 0%, #66BB6A 100%);
+    top: 35%;
+    right: 8%;
 }
 
 .tree-5 {
-    top: 20%;
-    left: 30%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="45" y="100" width="10" height="50" fill="%238B4513"/><circle cx="50" cy="70" r="30" fill="%2332CD32"/><circle cx="50" cy="40" r="20" fill="%2332CD32"/></svg>');
+    width: 85px;
+    height: 85px;
+    background: radial-gradient(circle, #A5D6A7 0%, #81C784 100%);
+    bottom: 25%;
+    left: 12%;
 }
 
 .tree-6 {
+    width: 75px;
+    height: 75px;
+    background: radial-gradient(circle, #C8E6C9 0%, #A5D6A7 100%);
     bottom: 30%;
-    right: 25%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="45" y="100" width="10" height="50" fill="%238B4513"/><circle cx="50" cy="70" r="30" fill="%2332CD32"/><circle cx="50" cy="40" r="20" fill="%2332CD32"/></svg>');
+    right: 12%;
 }
 
-/* 动物角色 */
-.animal {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.animal.rabbit {
-    top: 40%;
-    left: 25%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%23FFFFFF"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="40" rx="3" ry="2" fill="%23FF69B4"/><circle cx="35" cy="30" r="5" fill="%23FFFFFF"/><circle cx="65" cy="30" r="5" fill="%23FFFFFF"/><rect x="40" y="50" width="20" height="15" fill="%23FFFFFF"/><rect x="35" y="60" width="10" height="20" fill="%23FFFFFF"/><rect x="55" y="60" width="10" height="20" fill="%23FFFFFF"/></svg>');
-}
-
-.animal.bear {
-    top: 15%;
-    right: 20%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="25" fill="%238B4513"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="45" rx="5" ry="3" fill="%23000000"/><rect x="30" y="60" width="15" height="20" fill="%238B4513"/><rect x="55" y="60" width="15" height="20" fill="%238B4513"/><rect x="40" y="70" width="20" height="15" fill="%238B4513"/><rect x="35" y="30" width="30" height="10" fill="%23ADD8E6"/></svg>');
-}
-
-.animal.cat {
-    bottom: 30%;
-    left: 15%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%2387CEEB"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="45" rx="5" ry="2" fill="%23FF69B4"/><rect x="30" y="50" width="10" height="15" fill="%2387CEEB"/><rect x="60" y="50" width="10" height="15" fill="%2387CEEB"/><rect x="35" y="60" width="10" height="20" fill="%2387CEEB"/><rect x="55" y="60" width="10" height="20" fill="%2387CEEB"/></svg>');
-}
-
-.animal.pink-rabbit {
-    bottom: 20%;
-    right: 25%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%23FFB6C1"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="40" rx="3" ry="2" fill="%23FF69B4"/><circle cx="35" cy="30" r="5" fill="%23FFB6C1"/><circle cx="65" cy="30" r="5" fill="%23FFB6C1"/><rect x="40" y="50" width="20" height="15" fill="%23FFB6C1"/><rect x="35" y="60" width="10" height="20" fill="%23FFB6C1"/><rect x="55" y="60" width="10" height="20" fill="%23FFB6C1"/></svg>');
-}
-
-.animal.dog {
-    bottom: 10%;
-    left: 60%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="45" r="20" fill="%23DEB887"/><circle cx="40" cy="40" r="3" fill="%23000000"/><circle cx="60" cy="40" r="3" fill="%23000000"/><ellipse cx="50" cy="48" rx="5" ry="2" fill="%23000000"/><rect x="30" y="55" width="10" height="15" fill="%23DEB887"/><rect x="60" y="55" width="10" height="15" fill="%23DEB887"/><rect x="35" y="65" width="10" height="15" fill="%23DEB887"/><rect x="55" y="65" width="10" height="15" fill="%23DEB887"/></svg>');
-}
-
-.animal.fox {
-    top: 50%;
-    right: 30%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%23FF8C00"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="45" rx="5" ry="2" fill="%23000000"/><rect x="30" y="50" width="10" height="15" fill="%23FF8C00"/><rect x="60" y="50" width="10" height="15" fill="%23FF8C00"/><rect x="35" y="60" width="10" height="20" fill="%23FF8C00"/><rect x="55" y="60" width="10" height="20" fill="%23FF8C00"/></svg>');
-}
-
-.animal.panda {
-    top: 25%;
-    left: 40%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%23FFFFFF"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="45" rx="5" ry="2" fill="%23000000"/><rect x="30" y="50" width="10" height="15" fill="%23FFFFFF"/><rect x="60" y="50" width="10" height="15" fill="%23FFFFFF"/><rect x="35" y="60" width="10" height="20" fill="%23FFFFFF"/><rect x="55" y="60" width="10" height="20" fill="%23FFFFFF"/><circle cx="40" cy="35" r="5" fill="%23000000"/><circle cx="60" cy="35" r="5" fill="%23000000"/></svg>');
-}
-
-.animal.koala {
-    bottom: 40%;
-    left: 70%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%23808080"/><circle cx="40" cy="35" r="3" fill="%23000000"/><circle cx="60" cy="35" r="3" fill="%23000000"/><ellipse cx="50" cy="45" rx="5" ry="2" fill="%23000000"/><rect x="30" y="50" width="10" height="15" fill="%23808080"/><rect x="60" y="50" width="10" height="15" fill="%23808080"/><rect x="35" y="60" width="10" height="20" fill="%23808080"/><rect x="55" y="60" width="10" height="20" fill="%23808080"/></svg>');
-}
-
-/* 云朵 */
-.cloud {
-    position: absolute;
-    font-size: 2em;
-}
-
-.cloud-1 {
-    top: 10%;
-    left: 10%;
-}
-
-.cloud-2 {
-    top: 25%;
-    right: 15%;
-}
-
-.cloud-3 {
-    top: 60%;
-    left: 30%;
-}
-
-/* 花朵 */
-.flower {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.flower-1 {
-    bottom: 5%;
-    left: 10%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="%23FF69B4"/><circle cx="50" cy="50" r="10" fill="%23FFFF00"/></svg>');
-}
-
-.flower-2 {
+.tree-7 {
+    width: 95px;
+    height: 95px;
+    background: radial-gradient(circle, #81C784 0%, #66BB6A 100%);
     bottom: 15%;
-    right: 20%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="%23FF1493"/><circle cx="50" cy="50" r="10" fill="%23FFFF00"/></svg>');
+    left: 25%;
 }
 
-.flower-3 {
-    bottom: 25%;
-    left: 30%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="%23FF69B4"/><circle cx="50" cy="50" r="10" fill="%23FFFF00"/></svg>');
-}
-
-.flower-4 {
+.tree-8 {
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, #A5D6A7 0%, #81C784 100%);
     bottom: 10%;
-    right: 40%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="%23FF1493"/><circle cx="50" cy="50" r="10" fill="%23FFFF00"/></svg>');
+    right: 20%;
 }
 
-/* 关卡路径 */
-.level-path {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 60px;
-    margin-top: 40px;
-    padding: 0 20px;
-}
-
-/* 关卡节点 */
-.level-node {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #d2b48c 0%, #8b4513 100%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.8em;
-    font-weight: bold;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-    border: 4px solid #654321;
-    position: relative;
-    overflow: hidden;
-}
-
-.level-node::before {
-    content: '';
+/* Q版小动物 */
+.animal-character {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-radial-gradient(
-        circle at center,
-        rgba(255, 255, 255, 0.1) 0%,
-        rgba(255, 255, 255, 0.05) 10%,
-        transparent 10%,
-        transparent 20%
-    );
-    border-radius: 50%;
+    font-size: 3em;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
-.level-node:hover {
-    transform: scale(1.15);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+.bear {
+    top: 15%;
+    left: 20%;
+    animation: sleep 3s ease-in-out infinite;
 }
 
-/* 已完成的关卡 */
-.level-node.completed {
-    background: radial-gradient(circle, #98fb98 0%, #228b22 100%);
-    border-color: #006400;
-    color: white;
-}
-
-.level-node.completed::after {
-    content: '✓';
+.bear::after {
+    content: '💤';
     position: absolute;
-    bottom: -10px;
+    top: -20px;
     right: -10px;
-    background: #ffeb3b;
-    color: #333;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    font-size: 1.2em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 3px solid white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* 当前关卡 */
-.level-node.current {
-    background: radial-gradient(circle, #ffeb3b 0%, #ffc107 100%);
-    border-color: #f57c00;
-    color: #333;
-    animation: currentPulse 2s ease-in-out infinite;
-    width: 110px;
-    height: 110px;
-    font-size: 2em;
-}
-
-.level-node.current::before {
-    content: '▶';
-    position: absolute;
-    top: -30px;
     font-size: 1.5em;
-    color: #f57c00;
-    animation: arrowBounce 1s ease-in-out infinite;
+    animation: float 2s ease-in-out infinite;
 }
 
-@keyframes currentPulse {
-    0%, 100% {
-        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
-    }
-    50% {
-        box-shadow: 0 0 0 25px rgba(255, 193, 7, 0);
-    }
+.rabbit {
+    top: 45%;
+    right: 15%;
+    animation: hop 2s ease-in-out infinite;
 }
 
-@keyframes arrowBounce {
+.cat {
+    bottom: 20%;
+    left: 35%;
+    animation: tail 1.5s ease-in-out infinite;
+}
+
+@keyframes sleep {
     0%, 100% {
         transform: translateY(0);
     }
     50% {
-        transform: translateY(-15px);
+        transform: translateY(-3px);
     }
 }
 
-/* 锁定关卡 */
-.level-node.locked {
-    background: radial-gradient(circle, #bdbdbd 0%, #757575 100%);
-    border-color: #616161;
-    color: #e0e0e0;
-    cursor: not-allowed;
+@keyframes hop {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
 }
 
-.level-node.locked::after {
-    content: '🔒';
+@keyframes tail {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(5deg);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-10px);
+        opacity: 0.7;
+    }
+}
+
+/* S形弯曲小路 */
+.winding-path {
     position: absolute;
-    font-size: 1.8em;
-    opacity: 0.7;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 70%;
+    background: linear-gradient(90deg, #FFF8DC 0%, #FAF0E6 50%, #FFF8DC 100%);
+    border-radius: 100px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 30px;
+    overflow-y: auto;
 }
 
-/* 关卡连接线 */
-.level-connector {
-    width: 6px;
-    height: 60px;
-    background: linear-gradient(180deg, #8d6e63 0%, #a1887f 100%);
+/* 关卡木桩 */
+.level-stump {
     position: relative;
-    border-radius: 3px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle, #DEB887 0%, #D2B48C 100%);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border: 3px solid #8B4513;
 }
 
-.level-connector::before {
+.level-stump::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-        0deg,
-        rgba(255, 255, 255, 0.2) 0%,
-        rgba(255, 255, 255, 0.1) 8px,
-        transparent 8px,
-        transparent 16px
-    );
-    border-radius: 3px;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border-radius: 50%;
+    border: 2px dashed #A0522D;
+    opacity: 0.3;
 }
 
-/* 星星装饰 */
-.star {
+.level-stump:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.level-stump.completed {
+    background: radial-gradient(circle, #C8E6C9 0%, #A5D6A7 100%);
+    border-color: #4CAF50;
+}
+
+.level-stump.current {
+    background: radial-gradient(circle, #FFF9C4 0%, #FFEB3B 100%);
+    border-color: #FF9800;
+    box-shadow: 0 0 15px rgba(255, 235, 59, 0.6);
+    animation: pulse 2s infinite;
+}
+
+.level-stump.locked {
+    background: radial-gradient(circle, #E0E0E0 0%, #BDBDBD 100%);
+    border-color: #9E9E9E;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.level-stump.locked::after {
+    content: '🔒';
     position: absolute;
-    font-size: 1.2em;
-    animation: starTwinkle 2s ease-in-out infinite;
-    color: #ffeb3b;
-    text-shadow: 0 0 10px #ffeb3b;
+    font-size: 1.5em;
+    opacity: 0.5;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(255, 235, 59, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(255, 235, 59, 0.9);
+    }
+}
+
+/* 关卡数字 */
+.level-number {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .forest-background {
+        min-height: 500px;
+    }
+    
+    .winding-path {
+        width: 90%;
+        height: 60%;
+        gap: 10px;
+        padding: 20px;
+    }
+    
+    .level-stump {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .level-number {
+        font-size: 1.2em;
+    }
+    
+    .tree {
+        transform: scale(0.8);
+    }
+    
+    .animal-character {
+        font-size: 2.5em;
+    }
+}
+
+@media (max-width: 480px) {
+    .forest-background {
+        min-height: 400px;
+    }
+    
+    .winding-path {
+        width: 95%;
+        height: 50%;
+        gap: 8px;
+        padding: 15px;
+    }
+    
+    .level-stump {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .level-number {
+        font-size: 1em;
+    }
+    
+    .tree {
+        transform: scale(0.6);
+    }
+    
+    .animal-character {
+        font-size: 2em;
+    }
 }
 
 /* 弹窗样式 */
