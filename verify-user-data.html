@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>验证用户数据存储</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e8f5e8;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .error {
+            background: #ffebee;
+        }
+        .success {
+            background: #e8f5e8;
+        }
+    </style>
+</head>
+<body>
+    <h1>验证用户数据存储</h1>
+    
+    <div class="test-section">
+        <h2>存储数据检查</h2>
+        <button onclick="checkLocalStorage()">检查localStorage数据</button>
+        <button onclick="clearData()">清除测试数据</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>检查结果</h2>
+        <div id="check-result" class="result"></div>
+    </div>
+
+    <script>
+        function checkLocalStorage() {
+            const resultEl = document.getElementById('check-result');
+            let output = '';
+            
+            // 检查当前用户
+            const currentUser = localStorage.getItem('animalMatch3CurrentUser');
+            output += `当前用户: ${currentUser || '无'}\n`;
+            
+            // 检查用户数据
+            const usersJson = localStorage.getItem('animalMatch3Users');
+            if (usersJson) {
+                try {
+                    const users = JSON.parse(usersJson);
+                    output += `\n用户数据: \n${JSON.stringify(users, null, 2)}\n`;
+                    
+                    // 验证数据结构
+                    if (currentUser && users[currentUser]) {
+                        const userData = users[currentUser];
+                        output += '\n数据结构验证:\n';
+                        
+                        const requiredFields = [
+                            'name', 'avatar', 'currentLevel', 'maxLevel',
+                            'totalScore', 'lives', 'maxLives', 'lastLifeRecovery',
+                            'completedLevels', 'friends'
+                        ];
+                        
+                        let allFieldsPresent = true;
+                        requiredFields.forEach(field => {
+                            if (userData[field] !== undefined) {
+                                output += `✓ ${field}: ${userData[field]}\n`;
+                            } else {
+                                output += `✗ ${field}: 缺失\n`;
+                                allFieldsPresent = false;
+                            }
+                        });
+                        
+                        if (allFieldsPresent) {
+                            output += '\n✅ 所有必要字段都存在';
+                            resultEl.className = 'result success';
+                        } else {
+                            output += '\n❌ 缺少必要字段';
+                            resultEl.className = 'result error';
+                        }
+                    }
+                } catch (e) {
+                    output += `\n❌ 数据解析错误: ${e.message}`;
+                    resultEl.className = 'result error';
+                }
+            } else {
+                output += '\n❌ 没有用户数据';
+                resultEl.className = 'result error';
+            }
+            
+            resultEl.textContent = output;
+        }
+        
+        function clearData() {
+            if (confirm('确定要清除所有测试数据吗？')) {
+                localStorage.removeItem('animalMatch3CurrentUser');
+                localStorage.removeItem('animalMatch3Users');
+                document.getElementById('check-result').textContent = '已清除所有测试数据';
+            }
+        }
+        
+        // 初始化
+        checkLocalStorage();
+    </script>
+</body>
+</html>

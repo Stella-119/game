@@ -7,75 +7,110 @@
     <link rel="stylesheet" href="level-select.css">
 </head>
 <body>
-    <div class="forest-container">
-        <div class="forest-background">
-            <div class="tree tree-1">🌲</div>
-            <div class="tree tree-2">🌳</div>
-            <div class="tree tree-3">🌲</div>
-            <div class="tree tree-4">🌳</div>
-            <div class="tree tree-5">🌲</div>
-            <div class="animal animal-1">🦌</div>
-            <div class="animal animal-2">🐰</div>
-            <div class="animal animal-3">🦊</div>
-            <div class="animal animal-4">🐿️</div>
-        </div>
-        
-        <div class="level-select-container">
-            <div class="user-profile">
-                <div class="avatar-container">
-                    <div class="avatar" id="avatar">🐱</div>
-                    <button class="edit-avatar-btn" id="edit-avatar-btn">✏️</button>
-                </div>
-                <div class="user-info">
-                    <div class="user-name-container">
-                        <span class="user-name" id="user-name">森林探险家</span>
-                        <button class="edit-name-btn" id="edit-name-btn">✏️</button>
-                    </div>
-                    <div class="user-stats">
-                        <div class="stat">
-                            <span class="stat-label">最高关卡:</span>
-                            <span class="stat-value" id="max-level">1</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">总分数:</span>
-                            <span class="stat-value" id="total-score">0</span>
-                        </div>
+    <div class="game-container">
+        <!-- 顶部信息栏 -->
+        <div class="top-bar">
+            <!-- 左侧用户信息和设置 -->
+            <div class="user-info">
+                <div class="avatar" id="avatar">🐱</div>
+                <div class="user-name" id="user-name">森林探险家</div>
+                <div class="settings-container">
+                    <button class="settings-btn" id="settings-btn">⚙️</button>
+                    <div class="settings-dropdown" id="settings-dropdown">
+                        <div class="dropdown-item" id="switch-account">切换账号</div>
+                        <div class="dropdown-item" id="logout">退出登录</div>
                     </div>
                 </div>
             </div>
             
-            <h1 class="forest-title">🌲 动物森林 🌲</h1>
-            
-            <div class="levels-grid" id="levels-grid">
-            </div>
-            
-            <div class="game-controls">
-                <button class="forest-btn" id="back-to-game">返回游戏</button>
-                <button class="forest-btn" id="play-selected">开始游戏</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal" id="avatar-modal">
-        <div class="modal-content">
-            <h3>选择你的动物头像</h3>
-            <div class="avatar-options" id="avatar-options">
-            </div>
-            <button class="close-modal" id="close-avatar-modal">确定</button>
-        </div>
-    </div>
-    
-    <div class="modal" id="name-modal">
-        <div class="modal-content">
-            <h3>修改你的名字</h3>
-            <input type="text" id="name-input" class="name-input" maxlength="10">
-            <div class="modal-buttons">
-                <button class="modal-btn" id="cancel-name">取消</button>
-                <button class="modal-btn confirm" id="confirm-name">确定</button>
+            <!-- 右侧游戏数据 -->
+            <div class="game-stats">
+                <div class="stat-item score">
+                    <span class="stat-icon">🏆</span>
+                    <span class="stat-value" id="total-score">0</span>
+                </div>
+                <div class="stat-item lives">
+                    <span class="stat-icon">❤️</span>
+                    <span class="stat-value" id="lives">10</span>
+                </div>
             </div>
         </div>
+
+        <!-- 主游戏场景 -->
+        <div class="game-scene">
+            <!-- 背景装饰 -->
+            <div class="background-elements">
+                <!-- 树木 -->
+                <div class="tree tree-1"></div>
+                <div class="tree tree-2"></div>
+                <div class="tree tree-3"></div>
+                <div class="tree tree-4"></div>
+                <div class="tree tree-5"></div>
+                <div class="tree tree-6"></div>
+                
+                <!-- 动物角色 -->
+                <div class="animal rabbit"></div>
+                <div class="animal bear"></div>
+                <div class="animal cat"></div>
+                <div class="animal pink-rabbit"></div>
+                <div class="animal dog"></div>
+                <div class="animal fox"></div>
+                <div class="animal panda"></div>
+                <div class="animal koala"></div>
+                
+                <!-- 云朵 -->
+                <div class="cloud cloud-1">☁️</div>
+                <div class="cloud cloud-2">☁️</div>
+                <div class="cloud cloud-3">☁️</div>
+                
+                <!-- 花朵 -->
+                <div class="flower flower-1"></div>
+                <div class="flower flower-2"></div>
+                <div class="flower flower-3"></div>
+                <div class="flower flower-4"></div>
+                
+                <!-- 蝴蝶 -->
+                <div class="butterfly butterfly-1">🦋</div>
+                <div class="butterfly butterfly-2">🦋</div>
+                
+                <!-- 星星 -->
+                <div class="star star-1">⭐</div>
+                <div class="star star-2">⭐</div>
+                <div class="star star-3">⭐</div>
+                <div class="star star-4">⭐</div>
+            </div>
+
+            <!-- 关卡路径 -->
+            <div class="level-path" id="level-path">
+                <!-- 关卡节点将通过JS动态生成 -->
+            </div>
+        </div>
+
+        <!-- 编辑资料弹窗 -->
+        <div class="modal" id="profile-modal">
+            <div class="modal-content">
+                <h3>编辑个人资料</h3>
+                <div class="profile-section">
+                    <div class="avatar-selection">
+                        <div class="current-avatar-display" id="current-avatar-display">🐱</div>
+                        <p>选择头像</p>
+                        <div class="avatar-options" id="avatar-options"></div>
+                    </div>
+                    <div class="name-edit">
+                        <label>昵称:</label>
+                        <input type="text" id="edit-name-input" class="name-input" placeholder="输入新昵称">
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-btn cancel" id="cancel-profile">取消</button>
+                    <button class="modal-btn confirm" id="save-profile">保存</button>
+                </div>
+            </div>
+        </div>
+
+
     </div>
-    
+
     <script src="level-select.js"></script>
 </body>
 </html>

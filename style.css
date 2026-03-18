@@ -90,6 +90,56 @@ body {
     animation: fallAnimation 0.3s ease-in;
 }
 
+.tile.special {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+}
+
+.tile.special-horizontal {
+    animation: specialHorizontal 2s ease-in-out infinite;
+}
+
+.tile.special-vertical {
+    animation: specialVertical 2s ease-in-out infinite;
+}
+
+.tile.special-bomb {
+    animation: specialBomb 2s ease-in-out infinite;
+}
+
+@keyframes specialHorizontal {
+    0%, 100% {
+        transform: scale(1.1) rotate(0deg);
+        box-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
+    }
+    50% {
+        transform: scale(1.15) rotate(5deg);
+        box-shadow: 0 0 30px rgba(255, 105, 180, 1);
+    }
+}
+
+@keyframes specialVertical {
+    0%, 100% {
+        transform: scale(1.1) rotate(0deg);
+        box-shadow: 0 0 20px rgba(100, 149, 237, 0.8);
+    }
+    50% {
+        transform: scale(1.15) rotate(-5deg);
+        box-shadow: 0 0 30px rgba(100, 149, 237, 1);
+    }
+}
+
+@keyframes specialBomb {
+    0%, 100% {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(255, 69, 0, 0.8);
+    }
+    50% {
+        transform: scale(1.2);
+        box-shadow: 0 0 30px rgba(255, 69, 0, 1);
+    }
+}
+
 .game-controls {
     margin: 20px 0;
 }
@@ -178,24 +228,106 @@ body {
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     .game-container {
         padding: 20px;
         margin: 10px;
+        max-width: 95%;
     }
     
     .game-header h1 {
-        font-size: 2em;
+        font-size: 1.8em;
+        margin-bottom: 15px;
+    }
+    
+    .game-info {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .score, .target, .level, .moves {
+        padding: 8px 16px;
+        font-size: 0.9em;
     }
     
     .game-board {
         grid-template-columns: repeat(6, 1fr);
+        gap: 6px;
+        padding: 12px;
+        margin: 15px 0;
+    }
+    
+    .tile {
+        font-size: 1.4em;
+        border-radius: 8px;
+    }
+    
+    .game-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .game-controls button {
+        padding: 10px 20px;
+        margin: 0;
+        font-size: 1em;
+    }
+    
+    #level-select-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-container {
+        padding: 15px;
+    }
+    
+    .game-header h1 {
+        font-size: 1.5em;
+    }
+    
+    .game-board {
+        grid-template-columns: repeat(5, 1fr);
         gap: 5px;
         padding: 10px;
     }
     
     .tile {
-        font-size: 1.5em;
+        font-size: 1.2em;
+    }
+    
+    .game-info {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .score, .target, .level, .moves {
+        padding: 6px 12px;
+        font-size: 0.8em;
+        margin: 0 5px;
+    }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+    .tile {
+        touch-action: manipulation;
+    }
+    
+    .tile:active {
+        transform: scale(0.95);
+    }
+    
+    .game-controls button {
+        touch-action: manipulation;
+    }
+    
+    .game-controls button:active {
+        transform: scale(0.95);
     }
 }
 

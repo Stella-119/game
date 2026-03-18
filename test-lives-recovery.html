@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试生命值恢复系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e8f5e8;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>测试生命值恢复系统</h1>
+    
+    <div class="test-section">
+        <h2>当前用户数据</h2>
+        <div id="current-data" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试操作</h2>
+        <button onclick="setLowLives()">设置生命值为3</button>
+        <button onclick="setOldTimestamp()">设置1小时前的时间戳</button>
+        <button onclick="checkRecovery()">检查恢复</button>
+        <button onclick="resetData()">重置数据</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试结果</h2>
+        <div id="test-result" class="result"></div>
+    </div>
+
+    <script>
+        function loadUserData() {
+            const currentUser = localStorage.getItem('animalMatch3CurrentUser');
+            if (!currentUser) {
+                return null;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('animalMatch3Users') || '{}');
+            return users[currentUser];
+        }
+        
+        function saveUserData(userData) {
+            const currentUser = localStorage.getItem('animalMatch3CurrentUser');
+            if (currentUser) {
+                const users = JSON.parse(localStorage.getItem('animalMatch3Users') || '{}');
+                users[currentUser] = userData;
+                localStorage.setItem('animalMatch3Users', JSON.stringify(users));
+            }
+        }
+        
+        function updateCurrentData() {
+            const userData = loadUserData();
+            const currentDataEl = document.getElementById('current-data');
+            if (userData) {
+                currentDataEl.innerHTML = `
+                    <p>昵称: ${userData.name}</p>
+                    <p>生命值: ${userData.lives}/${userData.maxLives}</p>
+                    <p>最后恢复时间: ${new Date(userData.lastLifeRecovery).toLocaleString()}</p>
+                    <p>总积分: ${userData.totalScore}</p>
+                    <p>当前关卡: ${userData.currentLevel}</p>
+                `;
+            } else {
+                currentDataEl.innerHTML = '<p>请先登录游戏</p>';
+            }
+        }
+        
+        function setLowLives() {
+            const userData = loadUserData();
+            if (userData) {
+                userData.lives = 3;
+                saveUserData(userData);
+                updateCurrentData();
+                document.getElementById('test-result').innerHTML = '<p>已设置生命值为3</p>';
+            }
+        }
+        
+        function setOldTimestamp() {
+            const userData = loadUserData();
+            if (userData) {
+                // 设置为1小时前
+                userData.lastLifeRecovery = Date.now() - 60 * 60 * 1000;
+                saveUserData(userData);
+                updateCurrentData();
+                document.getElementById('test-result').innerHTML = '<p>已设置时间戳为1小时前</p>';
+            }
+        }
+        
+        function checkRecovery() {
+            const userData = loadUserData();
+            if (userData) {
+                const now = Date.now();
+                const timeSinceLastRecovery = now - userData.lastLifeRecovery;
+                const recoveryInterval = 30 * 60 * 1000; // 30分钟
+                
+                let recoveredLives = 0;
+                if (userData.lives < userData.maxLives && timeSinceLastRecovery >= recoveryInterval) {
+                    recoveredLives = Math.floor(timeSinceLastRecovery / recoveryInterval);
+                    userData.lives = Math.min(userData.lives + recoveredLives, userData.maxLives);
+                    userData.lastLifeRecovery = now;
+                    saveUserData(userData);
+                }
+                
+                updateCurrentData();
+                document.getElementById('test-result').innerHTML = `<p>恢复了 ${recoveredLives} 条生命</p>`;
+            }
+        }
+        
+        function resetData() {
+            const userData = loadUserData();
+            if (userData) {
+                userData.lives = 10;
+                userData.lastLifeRecovery = Date.now();
+                saveUserData(userData);
+                updateCurrentData();
+                document.getElementById('test-result').innerHTML = '<p>已重置数据</p>';
+            }
+        }
+        
+        // 初始化
+        updateCurrentData();
+    </script>
+</body>
+</html>

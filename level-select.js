@@ -3,7 +3,8 @@ class LevelSelect {
         this.userData = this.loadUserData();
         this.selectedLevel = this.userData.currentLevel;
         this.avatarOptions = ['🐱', '🐶', '🐰', '🦊', '🐼', '🐨', '🦁', '🐯', '🐻', '🐸', '🐵', '🦄'];
-        this.selectedAvatar = this.userData.avatar;
+        this.tempAvatar = this.userData.avatar;
+        this.tempName = this.userData.name;
         
         this.init();
     }
@@ -12,55 +13,100 @@ class LevelSelect {
         this.renderLevels();
         this.updateUserInfo();
         this.bindEvents();
-        this.renderAvatarOptions();
+        this.checkLivesRecovery();
+        setInterval(() => this.checkLivesRecovery(), 60000); // 每分钟检查一次
     }
     
     loadUserData() {
-        const savedData = localStorage.getItem('animalMatch3UserData');
-        if (savedData) {
-            return JSON.parse(savedData);
+        const currentUser = localStorage.getItem('animalMatch3CurrentUser');
+        if (!currentUser) {
+            window.location.href = 'auth.html';
+            return;
         }
         
-        return {
-            name: '森林探险家',
-            avatar: '🐱',
-            currentLevel: 1,
-            maxLevel: 1,
-            totalScore: 0,
-            completedLevels: []
-        };
+        const users = this.getUsers();
+        const userData = users[currentUser];
+        
+        if (!userData) {
+            // 如果用户数据不存在，创建默认数据
+            const newUserData = {
+                username: currentUser,
+                name: currentUser,
+                avatar: '🐱',
+                currentLevel: 1,
+                maxLevel: 1,
+                totalScore: 0,
+                lives: 10,
+                maxLives: 10,
+                lastLifeRecovery: Date.now(),
+                completedLevels: [],
+                friends: [],
+                createdAt: new Date().toISOString()
+            };
+            users[currentUser] = newUserData;
+            localStorage.setItem('animalMatch3Users', JSON.stringify(users));
+            return newUserData;
+        }
+        
+        // 确保数据结构完整
+        if (!userData.lives) userData.lives = 10;
+        if (!userData.maxLives) userData.maxLives = 10;
+        if (!userData.lastLifeRecovery) userData.lastLifeRecovery = Date.now();
+        if (!userData.completedLevels) userData.completedLevels = [];
+        if (!userData.friends) userData.friends = [];
+        
+        return userData;
     }
     
     saveUserData() {
-        localStorage.setItem('animalMatch3UserData', JSON.stringify(this.userData));
+        const currentUser = localStorage.getItem('animalMatch3CurrentUser');
+        if (currentUser) {
+            const users = this.getUsers();
+            users[currentUser] = this.userData;
+            localStorage.setItem('animalMatch3Users', JSON.stringify(users));
+        }
+    }
+    
+    getUsers() {
+        const users = localStorage.getItem('animalMatch3Users');
+        return users ? JSON.parse(users) : {};
     }
     
     renderLevels() {
-        const levelsGrid = document.getElementById('levels-grid');
-        levelsGrid.innerHTML = '';
+        const levelPath = document.getElementById('level-path');
+        levelPath.innerHTML = '';
         
-        const totalLevels = 20;
+        const totalLevels = 5; // 初始5个关卡，匹配图片设计
         
         for (let i = 1; i <= totalLevels; i++) {
-            const levelItem = document.createElement('div');
-            levelItem.classList.add('level-item');
-            levelItem.textContent = i;
-            levelItem.dataset.level = i;
+            // 创建关卡节点
+            const levelNode = document.createElement('div');
+            levelNode.classList.add('level-node');
+            levelNode.textContent = i;
+            levelNode.dataset.level = i;
             
-            if (i < this.userData.currentLevel) {
-                levelItem.classList.add('completed');
-                levelItem.addEventListener('click', () => this.selectLevel(i));
+            // 设置关卡状态
+            if (this.userData.completedLevels.includes(i)) {
+                levelNode.classList.add('completed');
+                levelNode.addEventListener('click', () => this.selectLevel(i));
             } else if (i === this.userData.currentLevel) {
-                levelItem.classList.add('current');
-                levelItem.addEventListener('click', () => this.selectLevel(i));
-            } else if (i <= this.userData.maxLevel) {
-                levelItem.classList.add('unlocked');
-                levelItem.addEventListener('click', () => this.selectLevel(i));
+                levelNode.classList.add('current');
+                levelNode.addEventListener('click', () => this.selectLevel(i));
+            } else if (i < this.userData.currentLevel) {
+                levelNode.classList.add('completed');
+                levelNode.addEventListener('click', () => this.selectLevel(i));
             } else {
-                levelItem.classList.add('locked');
+                levelNode.classList.add('locked');
             }
             
-            levelsGrid.appendChild(levelItem);
+            levelPath.appendChild(levelNode);
+            
+            // 添加连接线（除了最后一个关卡）
+            if (i < totalLevels) {
+                const connector = document.createElement('div');
+                connector.classList.add('level-connector');
+                levelPath.appendChild(connector);
+            }
         }
     }
     
@@ -68,58 +114,107 @@ class LevelSelect {
         if (level > this.userData.maxLevel) return;
         
         this.selectedLevel = level;
-        
-        document.querySelectorAll('.level-item').forEach(item => {
-            item.style.transform = '';
-        });
-        
-        const selectedElement = document.querySelector(`[data-level="${level}"]`);
-        if (selectedElement) {
-            selectedElement.style.transform = 'scale(1.15)';
-        }
+        this.startGame();
     }
     
     updateUserInfo() {
         document.getElementById('avatar').textContent = this.userData.avatar;
         document.getElementById('user-name').textContent = this.userData.name;
-        document.getElementById('max-level').textContent = this.userData.maxLevel;
         document.getElementById('total-score').textContent = this.userData.totalScore;
+        document.getElementById('lives').textContent = this.userData.lives;
     }
     
     bindEvents() {
-        document.getElementById('edit-avatar-btn').addEventListener('click', () => {
-            this.openAvatarModal();
+        // 头像点击事件 - 直接编辑资料
+        document.getElementById('avatar').addEventListener('click', () => {
+            this.openProfileModal();
         });
         
-        document.getElementById('edit-name-btn').addEventListener('click', () => {
-            this.openNameModal();
+        // 设置按钮点击事件
+        document.getElementById('settings-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleSettingsDropdown();
         });
         
-        document.getElementById('close-avatar-modal').addEventListener('click', () => {
-            this.closeAvatarModal();
+        // 切换账号
+        document.getElementById('switch-account').addEventListener('click', () => {
+            this.switchAccount();
         });
         
-        document.getElementById('cancel-name').addEventListener('click', () => {
-            this.closeNameModal();
+        // 退出登录
+        document.getElementById('logout').addEventListener('click', () => {
+            this.logout();
         });
         
-        document.getElementById('confirm-name').addEventListener('click', () => {
-            this.saveName();
+        // 编辑资料弹窗
+        document.getElementById('cancel-profile').addEventListener('click', () => {
+            this.closeProfileModal();
         });
         
-        document.getElementById('back-to-game').addEventListener('click', () => {
-            this.goToGame();
+        document.getElementById('save-profile').addEventListener('click', () => {
+            this.saveProfile();
         });
         
-        document.getElementById('play-selected').addEventListener('click', () => {
-            this.startGame();
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', () => {
+            this.closeAllDropdowns();
         });
         
-        document.getElementById('name-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.saveName();
+        // 关卡点击事件已在renderLevels中绑定
+    }
+    
+    // 检查生命值恢复
+    checkLivesRecovery() {
+        if (this.userData.lives < this.userData.maxLives) {
+            const now = Date.now();
+            const timeSinceLastRecovery = now - this.userData.lastLifeRecovery;
+            const recoveryInterval = 30 * 60 * 1000; // 30分钟
+            
+            if (timeSinceLastRecovery >= recoveryInterval) {
+                const recoveredLives = Math.floor(timeSinceLastRecovery / recoveryInterval);
+                this.userData.lives = Math.min(this.userData.lives + recoveredLives, this.userData.maxLives);
+                this.userData.lastLifeRecovery = now;
+                this.saveUserData();
+                this.updateUserInfo();
             }
-        });
+        }
+    }
+    
+    // 设置下拉菜单
+    toggleSettingsDropdown() {
+        const dropdown = document.getElementById('settings-dropdown');
+        dropdown.classList.toggle('active');
+    }
+    
+
+    
+    // 关闭所有下拉菜单
+    closeAllDropdowns() {
+        document.getElementById('settings-dropdown').classList.remove('active');
+    }
+    
+    // 切换账号
+    switchAccount() {
+        if (confirm('确定要切换账号吗？')) {
+            localStorage.removeItem('animalMatch3CurrentUser');
+            window.location.href = 'auth.html';
+        }
+    }
+    
+    // 编辑资料
+    openProfileModal() {
+        this.tempAvatar = this.userData.avatar;
+        this.tempName = this.userData.name;
+        
+        document.getElementById('current-avatar-display').textContent = this.tempAvatar;
+        document.getElementById('edit-name-input').value = this.tempName;
+        
+        this.renderAvatarOptions();
+        document.getElementById('profile-modal').classList.add('active');
+    }
+    
+    closeProfileModal() {
+        document.getElementById('profile-modal').classList.remove('active');
     }
     
     renderAvatarOptions() {
@@ -131,87 +226,61 @@ class LevelSelect {
             option.classList.add('avatar-option');
             option.textContent = avatar;
             
-            if (avatar === this.selectedAvatar) {
+            if (avatar === this.tempAvatar) {
                 option.classList.add('selected');
             }
             
             option.addEventListener('click', () => {
-                this.selectedAvatar = avatar;
                 document.querySelectorAll('.avatar-option').forEach(opt => {
                     opt.classList.remove('selected');
                 });
                 option.classList.add('selected');
+                this.tempAvatar = avatar;
+                document.getElementById('current-avatar-display').textContent = avatar;
             });
             
             avatarOptions.appendChild(option);
         });
     }
     
-    openAvatarModal() {
-        document.getElementById('avatar-modal').classList.add('active');
-    }
-    
-    closeAvatarModal() {
-        if (this.selectedAvatar !== this.userData.avatar) {
-            this.userData.avatar = this.selectedAvatar;
-            this.saveUserData();
-            this.updateUserInfo();
-        }
-        document.getElementById('avatar-modal').classList.remove('active');
-    }
-    
-    openNameModal() {
-        document.getElementById('name-input').value = this.userData.name;
-        document.getElementById('name-modal').classList.add('active');
-        document.getElementById('name-input').focus();
-    }
-    
-    closeNameModal() {
-        document.getElementById('name-modal').classList.remove('active');
-    }
-    
-    saveName() {
-        const nameInput = document.getElementById('name-input');
-        const newName = nameInput.value.trim();
+    saveProfile() {
+        const newName = document.getElementById('edit-name-input').value.trim();
         
-        if (newName && newName.length > 0) {
-            this.userData.name = newName;
-            this.saveUserData();
-            this.updateUserInfo();
-        }
-        
-        this.closeNameModal();
-    }
-    
-    goToGame() {
-        window.location.href = 'index.html';
-    }
-    
-    startGame() {
-        if (this.selectedLevel > this.userData.maxLevel) {
-            alert('请先解锁前面的关卡！');
+        if (!newName) {
+            alert('请输入昵称');
             return;
         }
         
-        this.userData.currentLevel = this.selectedLevel;
+        this.userData.avatar = this.tempAvatar;
+        this.userData.name = newName;
         this.saveUserData();
-        window.location.href = 'index.html';
+        this.updateUserInfo();
+        this.closeProfileModal();
+        alert('资料保存成功！');
     }
     
-    updateLevelProgress(level, score) {
-        if (level > this.userData.maxLevel) {
-            this.userData.maxLevel = level;
+    // 退出登录
+    logout() {
+        if (confirm('确定要退出登录吗？')) {
+            localStorage.removeItem('animalMatch3CurrentUser');
+            window.location.href = 'auth.html';
+        }
+    }
+    
+    // 开始游戏
+    startGame() {
+        if (this.userData.lives <= 0) {
+            alert('生命值不足，请等待恢复或稍后再试！');
+            return;
         }
         
-        if (!this.userData.completedLevels.includes(level)) {
-            this.userData.completedLevels.push(level);
-        }
-        
-        this.userData.totalScore += score;
-        this.saveUserData();
+        localStorage.setItem('animalMatch3SelectedLevel', this.selectedLevel);
+        window.location.href = 'index.html';
     }
 }
 
+// 初始化
+let levelSelect;
 window.addEventListener('DOMContentLoaded', () => {
-    window.levelSelect = new LevelSelect();
+    levelSelect = new LevelSelect();
 });

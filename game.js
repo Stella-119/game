@@ -2,6 +2,11 @@ class AnimalMatch3 {
     constructor() {
         this.boardSize = 8;
         this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
+        this.specialAnimals = {
+            horizontal: '🌈', // 横向消除
+            vertical: '⚡',    // 纵向消除
+            bomb: '💣'         // 爆炸（周围8格）
+        };
         this.board = [];
         this.score = 0;
         this.level = 1;
@@ -24,23 +29,53 @@ class AnimalMatch3 {
     }
     
     loadUserData() {
-        const savedData = localStorage.getItem('animalMatch3UserData');
-        if (savedData) {
-            return JSON.parse(savedData);
+        const currentUser = localStorage.getItem('animalMatch3CurrentUser');
+        if (!currentUser) {
+            window.location.href = 'auth.html';
+            return;
         }
         
-        return {
-            name: '森林探险家',
-            avatar: '🐱',
-            currentLevel: 1,
-            maxLevel: 1,
-            totalScore: 0,
-            completedLevels: []
-        };
+        const users = this.getUsers();
+        const userData = users[currentUser];
+        
+        if (!userData) {
+            return {
+                name: currentUser,
+                avatar: '🐱',
+                currentLevel: 1,
+                maxLevel: 1,
+                totalScore: 0,
+                lives: 10,
+                maxLives: 10,
+                lastLifeRecovery: Date.now(),
+                completedLevels: [],
+                friends: []
+            };
+        }
+        
+        // 确保数据结构完整
+        if (!userData.lives) userData.lives = 10;
+        if (!userData.maxLives) userData.maxLives = 10;
+        if (!userData.lastLifeRecovery) userData.lastLifeRecovery = Date.now();
+        if (!userData.completedLevels) userData.completedLevels = [];
+        if (!userData.friends) userData.friends = [];
+        if (!userData.totalScore) userData.totalScore = 0;
+        
+        return userData;
     }
     
     saveUserData() {
-        localStorage.setItem('animalMatch3UserData', JSON.stringify(this.userData));
+        const currentUser = localStorage.getItem('animalMatch3CurrentUser');
+        if (currentUser) {
+            const users = this.getUsers();
+            users[currentUser] = this.userData;
+            localStorage.setItem('animalMatch3Users', JSON.stringify(users));
+        }
+    }
+    
+    getUsers() {
+        const users = localStorage.getItem('animalMatch3Users');
+        return users ? JSON.parse(users) : {};
     }
     
     loadLevelData() {
@@ -57,32 +92,86 @@ class AnimalMatch3 {
     }
     
     createBoard() {
-        this.board = [];
-        for (let i = 0; i < this.boardSize; i++) {
-            this.board[i] = [];
-            for (let j = 0; j < this.boardSize; j++) {
-                let animal;
-                do {
-                    animal = this.animals[Math.floor(Math.random() * this.animals.length)];
-                } while (this.hasMatch(i, j, animal));
-                this.board[i][j] = animal;
+        let attempts = 0;
+        const maxAttempts = 100;
+        
+        do {
+            this.board = [];
+            
+            for (let i = 0; i < this.boardSize; i++) {
+                this.board[i] = [];
+                for (let j = 0; j < this.boardSize; j++) {
+                    let animal;
+                    let tileAttempts = 0;
+                    const maxTileAttempts = 20;
+                    
+                    do {
+                        animal = this.animals[Math.floor(Math.random() * this.animals.length)];
+                        tileAttempts++;
+                    } while (this.hasMatch(i, j, animal) && tileAttempts < maxTileAttempts);
+                    
+                    this.board[i][j] = animal;
+                }
             }
-        }
+            
+            attempts++;
+        } while (this.checkBoardForMatches() && attempts < maxAttempts);
     }
     
     hasMatch(row, col, animal) {
+        // 检查水平方向
         if (col >= 2 && this.board[row][col-1] === animal && this.board[row][col-2] === animal) {
             return true;
         }
+        
+        // 检查垂直方向
         if (row >= 2 && this.board[row-1][col] === animal && this.board[row-2][col] === animal) {
             return true;
         }
+        
+        // 检查斜向（左上到右下）
+        if (row >= 2 && col >= 2 && this.board[row-1][col-1] === animal && this.board[row-2][col-2] === animal) {
+            return true;
+        }
+        
+        // 检查斜向（右上到左下）
+        if (row >= 2 && col < this.boardSize - 2 && this.board[row-1][col+1] === animal && this.board[row-2][col+2] === animal) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    checkBoardForMatches() {
+        for (let i = 0; i < this.boardSize; i++) {
+            for (let j = 0; j < this.boardSize - 2; j++) {
+                if (this.board[i][j] && 
+                    this.board[i][j] === this.board[i][j+1] && 
+                    this.board[i][j] === this.board[i][j+2]) {
+                    return true;
+                }
+            }
+        }
+        
+        for (let j = 0; j < this.boardSize; j++) {
+            for (let i = 0; i < this.boardSize - 2; i++) {
+                if (this.board[i][j] && 
+                    this.board[i][j] === this.board[i+1][j] && 
+                    this.board[i][j] === this.board[i+2][j]) {
+                    return true;
+                }
+            }
+        }
+        
         return false;
     }
     
     renderBoard() {
         const boardElement = document.getElementById('game-board');
         boardElement.innerHTML = '';
+        
+        // 使用文档片段减少DOM操作
+        const fragment = document.createDocumentFragment();
         
         for (let i = 0; i < this.boardSize; i++) {
             for (let j = 0; j < this.boardSize; j++) {
@@ -91,9 +180,31 @@ class AnimalMatch3 {
                 tile.dataset.row = i;
                 tile.dataset.col = j;
                 tile.textContent = this.board[i][j];
-                boardElement.appendChild(tile);
+                
+                // 为特殊动物添加样式
+                const animal = this.board[i][j];
+                if (animal === this.specialAnimals.horizontal || 
+                    animal === this.specialAnimals.vertical || 
+                    animal === this.specialAnimals.bomb) {
+                    tile.classList.add('special');
+                    switch (animal) {
+                        case this.specialAnimals.horizontal:
+                            tile.classList.add('special-horizontal');
+                            break;
+                        case this.specialAnimals.vertical:
+                            tile.classList.add('special-vertical');
+                            break;
+                        case this.specialAnimals.bomb:
+                            tile.classList.add('special-bomb');
+                            break;
+                    }
+                }
+                
+                fragment.appendChild(tile);
             }
         }
+        
+        boardElement.appendChild(fragment);
     }
     
     bindEvents() {
@@ -109,15 +220,20 @@ class AnimalMatch3 {
         document.getElementById('restart-btn').addEventListener('click', () => {
             this.resetGame();
         });
-        
-        document.getElementById('hint-btn').addEventListener('click', () => {
-            this.showHint();
-        });
     }
     
     handleTileClick(tile) {
         const row = parseInt(tile.dataset.row);
         const col = parseInt(tile.dataset.col);
+        const animal = this.board[row][col];
+        
+        // 处理特殊动物的点击
+        if (animal === this.specialAnimals.horizontal || 
+            animal === this.specialAnimals.vertical || 
+            animal === this.specialAnimals.bomb) {
+            this.activateSpecialAnimal(row, col, animal);
+            return;
+        }
         
         if (!this.selectedTile) {
             this.selectedTile = { row, col, element: tile };
@@ -131,6 +247,62 @@ class AnimalMatch3 {
                 tile.classList.add('selected');
             }
         }
+    }
+    
+    async activateSpecialAnimal(row, col, type) {
+        this.isProcessing = true;
+        
+        let affectedTiles = [];
+        
+        switch (type) {
+            case this.specialAnimals.horizontal:
+                // 消除整行
+                for (let j = 0; j < this.boardSize; j++) {
+                    affectedTiles.push({ row, col: j });
+                }
+                break;
+            case this.specialAnimals.vertical:
+                // 消除整列
+                for (let i = 0; i < this.boardSize; i++) {
+                    affectedTiles.push({ row: i, col });
+                }
+                break;
+            case this.specialAnimals.bomb:
+                // 消除周围8格
+                for (let i = row - 1; i <= row + 1; i++) {
+                    for (let j = col - 1; j <= col + 1; j++) {
+                        if (i >= 0 && i < this.boardSize && j >= 0 && j < this.boardSize) {
+                            affectedTiles.push({ row: i, col: j });
+                        }
+                    }
+                }
+                break;
+        }
+        
+        // 显示特效
+        for (const tile of affectedTiles) {
+            const tileElement = document.querySelector(`[data-row="${tile.row}"][data-col="${tile.col}"]`);
+            if (tileElement) {
+                tileElement.classList.add('matched');
+                this.createConfetti(tileElement);
+            }
+            this.board[tile.row][tile.col] = null;
+        }
+        
+        this.score += affectedTiles.length * 20; // 特殊动物消除得分更高
+        this.updateGameInfo();
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await this.fillEmptySpaces();
+        
+        if (await this.checkMatches()) {
+            await this.processMatches();
+        }
+        
+        this.isProcessing = false;
+        this.moves--;
+        this.updateGameInfo();
+        this.checkGameEnd();
     }
     
     isAdjacent(tile1, tile2) {
@@ -194,27 +366,80 @@ class AnimalMatch3 {
     
     async processMatches() {
         let matchedTiles = [];
+        let specialAnimalsToCreate = [];
         
+        // 检测水平方向的匹配
         for (let i = 0; i < this.boardSize; i++) {
-            for (let j = 0; j < this.boardSize - 2; j++) {
-                if (this.board[i][j] && 
-                    this.board[i][j] === this.board[i][j+1] && 
-                    this.board[i][j] === this.board[i][j+2]) {
-                    matchedTiles.push({ row: i, col: j });
-                    matchedTiles.push({ row: i, col: j+1 });
-                    matchedTiles.push({ row: i, col: j+2 });
+            let j = 0;
+            while (j < this.boardSize) {
+                if (!this.board[i][j]) {
+                    j++;
+                    continue;
+                }
+                
+                let count = 1;
+                let currentAnimal = this.board[i][j];
+                
+                for (let k = j + 1; k < this.boardSize; k++) {
+                    if (this.board[i][k] === currentAnimal) {
+                        count++;
+                    } else {
+                        break;
+                    }
+                }
+                
+                if (count >= 3) {
+                    for (let k = j; k < j + count; k++) {
+                        matchedTiles.push({ row: i, col: k });
+                    }
+                    
+                    // 四连或五连生成特殊动物
+                    if (count >= 4) {
+                        let specialType = count >= 5 ? this.specialAnimals.bomb : this.specialAnimals.horizontal;
+                        specialAnimalsToCreate.push({ row: i, col: j + Math.floor(count / 2), type: specialType });
+                    }
+                    
+                    j += count;
+                } else {
+                    j++;
                 }
             }
         }
         
+        // 检测垂直方向的匹配
         for (let j = 0; j < this.boardSize; j++) {
-            for (let i = 0; i < this.boardSize - 2; i++) {
-                if (this.board[i][j] && 
-                    this.board[i][j] === this.board[i+1][j] && 
-                    this.board[i][j] === this.board[i+2][j]) {
-                    matchedTiles.push({ row: i, col: j });
-                    matchedTiles.push({ row: i+1, col: j });
-                    matchedTiles.push({ row: i+2, col: j });
+            let i = 0;
+            while (i < this.boardSize) {
+                if (!this.board[i][j]) {
+                    i++;
+                    continue;
+                }
+                
+                let count = 1;
+                let currentAnimal = this.board[i][j];
+                
+                for (let k = i + 1; k < this.boardSize; k++) {
+                    if (this.board[k][j] === currentAnimal) {
+                        count++;
+                    } else {
+                        break;
+                    }
+                }
+                
+                if (count >= 3) {
+                    for (let k = i; k < i + count; k++) {
+                        matchedTiles.push({ row: k, col: j });
+                    }
+                    
+                    // 四连或五连生成特殊动物
+                    if (count >= 4) {
+                        let specialType = count >= 5 ? this.specialAnimals.bomb : this.specialAnimals.vertical;
+                        specialAnimalsToCreate.push({ row: i + Math.floor(count / 2), col: j, type: specialType });
+                    }
+                    
+                    i += count;
+                } else {
+                    i++;
                 }
             }
         }
@@ -235,10 +460,56 @@ class AnimalMatch3 {
             await new Promise(resolve => setTimeout(resolve, 500));
             await this.fillEmptySpaces();
             
+            // 创建特殊动物
+            for (const special of specialAnimalsToCreate) {
+                if (this.board[special.row][special.col] === null) {
+                    this.board[special.row][special.col] = special.type;
+                }
+            }
+            
+            this.renderBoard();
+            
+            // 为特殊动物添加特效
+            await new Promise(resolve => setTimeout(resolve, 300));
+            this.addSpecialAnimalEffects();
+            
             if (await this.checkMatches()) {
                 await this.processMatches();
             }
         }
+    }
+    
+    addSpecialAnimalEffects() {
+        for (let i = 0; i < this.boardSize; i++) {
+            for (let j = 0; j < this.boardSize; j++) {
+                const animal = this.board[i][j];
+                if (animal === this.specialAnimals.horizontal || 
+                    animal === this.specialAnimals.vertical || 
+                    animal === this.specialAnimals.bomb) {
+                    const tileElement = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+                    if (tileElement) {
+                        tileElement.classList.add('special');
+                        this.addSpecialEffect(tileElement, animal);
+                    }
+                }
+            }
+        }
+    }
+    
+    addSpecialEffect(element, animal) {
+        let animationClass = '';
+        switch (animal) {
+            case this.specialAnimals.horizontal:
+                animationClass = 'special-horizontal';
+                break;
+            case this.specialAnimals.vertical:
+                animationClass = 'special-vertical';
+                break;
+            case this.specialAnimals.bomb:
+                animationClass = 'special-bomb';
+                break;
+        }
+        element.classList.add(animationClass);
     }
     
     async fillEmptySpaces() {
@@ -274,7 +545,10 @@ class AnimalMatch3 {
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         
-        for (let i = 0; i < 10; i++) {
+        // 减少纸屑数量，优化性能
+        const confettiCount = 6;
+        
+        for (let i = 0; i < confettiCount; i++) {
             const confetti = document.createElement('div');
             confetti.classList.add('confetti');
             confetti.style.left = centerX + 'px';
@@ -284,7 +558,12 @@ class AnimalMatch3 {
             confetti.style.animationDelay = Math.random() * 0.5 + 's';
             document.body.appendChild(confetti);
             
-            setTimeout(() => confetti.remove(), 3000);
+            // 使用requestAnimationFrame优化
+            setTimeout(() => {
+                if (confetti.parentNode) {
+                    confetti.parentNode.removeChild(confetti);
+                }
+            }, 3000);
         }
     }
     
@@ -293,53 +572,14 @@ class AnimalMatch3 {
         return colors[Math.floor(Math.random() * colors.length)];
     }
     
-    showHint() {
-        for (let i = 0; i < this.boardSize; i++) {
-            for (let j = 0; j < this.boardSize; j++) {
-                if (this.canSwapToMatch(i, j)) {
-                    const tile = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
-                    if (tile) {
-                        tile.style.boxShadow = '0 0 10px 5px #FFD700';
-                        setTimeout(() => tile.style.boxShadow = '', 2000);
-                        return;
-                    }
-                }
-            }
-        }
-    }
-    
-    canSwapToMatch(row, col) {
-        const directions = [{ row: -1, col: 0 }, { row: 1, col: 0 }, { row: 0, col: -1 }, { row: 0, col: 1 }];
-        
-        for (const dir of directions) {
-            const newRow = row + dir.row;
-            const newCol = col + dir.col;
-            
-            if (newRow >= 0 && newRow < this.boardSize && newCol >= 0 && newCol < this.boardSize) {
-                const temp = this.board[row][col];
-                this.board[row][col] = this.board[newRow][newCol];
-                this.board[newRow][newCol] = temp;
-                
-                const hasMatch = this.checkMatches();
-                
-                this.board[newRow][newCol] = this.board[row][col];
-                this.board[row][col] = temp;
-                
-                if (hasMatch) {
-                    return true;
-                }
-            }
-        }
-        
-        return false;
-    }
+
     
     checkGameEnd() {
         if (this.moves <= 0) {
             if (this.score >= this.targetScore) {
                 this.levelComplete();
             } else {
-                this.showMessage('游戏结束！', 'lose');
+                this.levelFailed();
             }
             return;
         }
@@ -347,6 +587,18 @@ class AnimalMatch3 {
         if (this.score >= this.targetScore) {
             this.levelComplete();
         }
+    }
+    
+    levelFailed() {
+        // 扣除一条生命值
+        this.userData.lives = Math.max(0, this.userData.lives - 1);
+        this.saveUserData();
+        
+        this.showMessage('游戏结束！生命值-1', 'lose');
+        
+        setTimeout(() => {
+            window.location.href = 'level-select.html';
+        }, 2000);
     }
     
     levelComplete() {
