@@ -1,6 +1,7 @@
 class AnimalMatch3 {
     constructor() {
-        this.boardSize = 8;
+        // 根据屏幕宽度动态调整游戏板大小
+        this.boardSize = this.getBoardSize();
         this.animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
         this.specialAnimals = {
             horizontal: '🌈', // 横向消除
@@ -17,6 +18,26 @@ class AnimalMatch3 {
         this.userData = this.loadUserData();
         
         this.init();
+        
+        // 监听窗口大小变化
+        window.addEventListener('resize', () => {
+            const newBoardSize = this.getBoardSize();
+            if (newBoardSize !== this.boardSize) {
+                this.boardSize = newBoardSize;
+                this.resetGame();
+            }
+        });
+    }
+    
+    getBoardSize() {
+        const width = window.innerWidth;
+        if (width <= 480) {
+            return 5; // 移动端小屏幕
+        } else if (width <= 768) {
+            return 6; // 移动端大屏幕
+        } else {
+            return 8; // 桌面端
+        }
     }
     
     init() {
@@ -208,6 +229,7 @@ class AnimalMatch3 {
     }
     
     bindEvents() {
+        // 点击事件
         document.getElementById('game-board').addEventListener('click', (e) => {
             if (this.isProcessing) return;
             
@@ -215,6 +237,72 @@ class AnimalMatch3 {
             if (tile.classList.contains('tile')) {
                 this.handleTileClick(tile);
             }
+        });
+        
+        // 触摸事件支持
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        let touchedTile = null;
+        
+        document.getElementById('game-board').addEventListener('touchstart', (e) => {
+            if (this.isProcessing) return;
+            
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            
+            const tile = document.elementFromPoint(touchStartX, touchStartY);
+            if (tile && tile.classList.contains('tile')) {
+                touchedTile = tile;
+            }
+        });
+        
+        document.getElementById('game-board').addEventListener('touchend', (e) => {
+            if (this.isProcessing || !touchedTile) return;
+            
+            const touch = e.changedTouches[0];
+            touchEndX = touch.clientX;
+            touchEndY = touch.clientY;
+            
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+            
+            // 确定滑动方向
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                // 水平滑动
+                if (Math.abs(diffX) > 30) { // 最小滑动距离
+                    const col = parseInt(touchedTile.dataset.col);
+                    const row = parseInt(touchedTile.dataset.row);
+                    const targetCol = diffX > 0 ? col + 1 : col - 1;
+                    
+                    if (targetCol >= 0 && targetCol < this.boardSize) {
+                        const targetTile = document.querySelector(`[data-row="${row}"][data-col="${targetCol}"]`);
+                        if (targetTile) {
+                            this.handleTileClick(touchedTile);
+                            this.handleTileClick(targetTile);
+                        }
+                    }
+                }
+            } else {
+                // 垂直滑动
+                if (Math.abs(diffY) > 30) { // 最小滑动距离
+                    const col = parseInt(touchedTile.dataset.col);
+                    const row = parseInt(touchedTile.dataset.row);
+                    const targetRow = diffY > 0 ? row + 1 : row - 1;
+                    
+                    if (targetRow >= 0 && targetRow < this.boardSize) {
+                        const targetTile = document.querySelector(`[data-row="${targetRow}"][data-col="${col}"]`);
+                        if (targetTile) {
+                            this.handleTileClick(touchedTile);
+                            this.handleTileClick(targetTile);
+                        }
+                    }
+                }
+            }
+            
+            touchedTile = null;
         });
         
         document.getElementById('restart-btn').addEventListener('click', () => {
@@ -341,22 +429,32 @@ class AnimalMatch3 {
     checkMatches() {
         let hasMatch = false;
         
+        // 检查水平方向匹配
         for (let i = 0; i < this.boardSize; i++) {
-            for (let j = 0; j < this.boardSize - 2; j++) {
+            let j = 0;
+            while (j < this.boardSize - 2) {
                 if (this.board[i][j] && 
                     this.board[i][j] === this.board[i][j+1] && 
                     this.board[i][j] === this.board[i][j+2]) {
                     hasMatch = true;
+                    j += 3; // 跳过已匹配的方块
+                } else {
+                    j++;
                 }
             }
         }
         
+        // 检查垂直方向匹配
         for (let j = 0; j < this.boardSize; j++) {
-            for (let i = 0; i < this.boardSize - 2; i++) {
+            let i = 0;
+            while (i < this.boardSize - 2) {
                 if (this.board[i][j] && 
                     this.board[i][j] === this.board[i+1][j] && 
                     this.board[i][j] === this.board[i+2][j]) {
                     hasMatch = true;
+                    i += 3; // 跳过已匹配的方块
+                } else {
+                    i++;
                 }
             }
         }
